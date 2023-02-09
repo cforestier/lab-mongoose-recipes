@@ -20,7 +20,7 @@ mongoose
   .then(() => {
     // Run your code here, after you have insured that the connection was made
     Recipe.create({
-      title: "Asian Glazed Chicken Thighs",
+      title: "test",
       level: "Amateur Chef",
       ingredients: [
         "1/2 cup rice vinegar",
@@ -38,9 +38,14 @@ mongoose
         "https://images.media-allrecipes.com/userphotos/720x405/815964.jpg",
       duration: 40,
       creator: "Chef LePapu",
-    }).then(new Recipe())
+    }).then((newRecipe) => {
+      console.log(newRecipe.title)
+    })
   })
-
   .catch((error) => {
     console.error("Error connecting to the database", error)
+  })
+
+  .then(() => {
+    Recipe.insertMany(data)
   })
