@@ -1,26 +1,26 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 // Import of the model Recipe from './models/Recipe.model.js'
-const Recipe = require("./models/Recipe.model")
+const Recipe = require("./models/Recipe.model");
 // Import of the data from './data.json'
-const data = require("./data")
-mongoose.set("strictQuery", false)
+const data = require("./data");
+mongoose.set("strictQuery", false);
 
-const MONGODB_URI = "mongodb://localhost:27017/recipe-app"
+const MONGODB_URI = "mongodb://127.0.0.1:27017/recipe-app";
 
 // Connection to the database "recipe-app"
 mongoose
   .connect(MONGODB_URI)
   .then((x) => {
-    console.log(`Connected to the database: "${x.connection.name}"`)
+    console.log(`Connected to the database: "${x.connection.name}"`);
     // Before adding any recipes to the database, let's remove all existing ones
-    return Recipe.deleteMany()
+    return Recipe.deleteMany();
   })
 
   .then(() => {
     // Run your code here, after you have insured that the connection was made
     Recipe.create({
-      title: "test",
+      title: "test of Recipe",
       level: "Amateur Chef",
       ingredients: [
         "1/2 cup rice vinegar",
@@ -39,13 +39,40 @@ mongoose
       duration: 40,
       creator: "Chef LePapu",
     }).then((newRecipe) => {
-      console.log(newRecipe.title)
-    })
+      console.log(newRecipe.title);
+    });
   })
   .catch((error) => {
-    console.error("Error connecting to the database", error)
+    console.error("Error connecting to the database", error);
   })
-
   .then(() => {
     Recipe.insertMany(data)
-  })
+      .then((parameter) => {
+        for (let i = 0; i < parameter.length; i++) {
+          console.log(parameter[i].title);
+        }
+      })
+      .then(() => {
+        Recipe.updateOne(
+          { title: "Rigatoni alla Genovese" },
+          { duration: 100 }
+        ).then(() => {
+          console.log("duration updated");
+        });
+      })
+      .then(() => {
+        Recipe.deleteOne({ title: "Carrot Cake" })
+          .then(() => {
+            console.log("success");
+          })
+          .then(() => {
+            mongoose.connection.close();
+          })
+          .catch((error) => {
+            console.error("Error connecting to the database", error);
+          });
+      })
+      .catch((error) => {
+        console.error("Error connecting to the database", error);
+      });
+  });
